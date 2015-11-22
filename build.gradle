@@ -6,7 +6,6 @@ repositories {
 }
 
 dependencies {
-    compile 'io.sjm:stdlib:0.0.1-SNAPSHOT'
     compile 'org.json:json:20150729'
 
     testCompile 'junit:junit:4.12'
