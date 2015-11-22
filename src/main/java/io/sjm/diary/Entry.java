@@ -22,11 +22,11 @@ import org.json.JSONStringer;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -35,24 +35,25 @@ import java.time.format.DateTimeFormatter;
  * is password encrypted.
  */
 public class Entry implements JSONString {
-    private LocalDate date;
-    private String text = "";
+    protected LocalDate date;
+    protected String text = "";
 
-    private String filename;
+    protected String password;
+    protected String filename;
 
-    public Entry() {
+    public Entry(String password) {
         this.date = LocalDate.now();
         this.filename = getFilename();
+        this.password = password;
     }
 
-    public Entry(LocalDate date) throws IOException {
+    public Entry(String password, LocalDate date) throws IOException {
         this.date = date;
         this.filename = getFilename();
+        this.password = password;
 
         if (exists())
-            text = load();
-        else
-            text = "";
+            load(password);
     }
 
     public String getText() {
@@ -84,30 +85,44 @@ public class Entry implements JSONString {
     /**
      * Read a diary entry from the corresponding text file.
      *
-     * @return a string representing this diary entry
      * @throws IOException
      */
-    public String load() throws IOException {
-        byte[] encoded = Files.readAllBytes(Paths.get(filename));
-        String str = new String(encoded, Charset.defaultCharset());
+    private void load(String password) throws IOException {
+        try {
+            String ciphertext = Utils.load(Paths.get(filename));
+            String plaintext = Crypto.decryptString(ciphertext, password);
+            fromJSONString(plaintext);
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+    }
 
-        JSONObject obj = new JSONObject(str);
+    /**
+     * Constructs the diary entry from a JSON encoded string.
+     *
+     * @param s a JSON encoded string representing a diary entry
+     */
+    private void fromJSONString(final String s) {
+        JSONObject obj = new JSONObject(s);
 
         date = LocalDate.parse(obj.getString("date"));
         text = obj.getString("entry");
-
-        return text;
     }
 
-    public void save() throws IOException {
+    public void save(String password) throws IOException {
         assert filename != null;
 
-        Path filePath = Paths.get(filename);
-        Files.createDirectories(filePath.getParent());
-        Files.write(Paths.get(filename), toJSONString().getBytes(), StandardOpenOption.CREATE);
+        try {
+            String ciphertext = Crypto.encryptString(toJSONString(), password);
+            Path filePath = Paths.get(filename);
+            Files.createDirectories(filePath.getParent());
+            Files.write(Paths.get(filename), ciphertext.getBytes(), StandardOpenOption.CREATE);
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
     }
 
-    public boolean exists() {
+    private boolean exists() {
         assert filename != null;
 
         return Files.exists(Paths.get(filename));

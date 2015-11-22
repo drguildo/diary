@@ -40,7 +40,7 @@ public class GUI extends Stage {
         HBox hBox = buildMenuBar(datePicker);
         TextArea textArea = new TextArea();
 
-        // password = getPassword();
+        password = getPassword();
 
         addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.isControlDown() && e.getCode() == KeyCode.W) {
@@ -52,7 +52,7 @@ public class GUI extends Stage {
             if (e.isControlDown() && e.getCode() == KeyCode.S) {
                 entry.setText(textArea.getText());
                 try {
-                    entry.save();
+                    entry.save(password);
                 } catch (IOException ex) {
                     ExceptionDialog ed = new ExceptionDialog(ex);
                     ed.showAndWait();
@@ -62,7 +62,7 @@ public class GUI extends Stage {
 
         datePicker.setOnAction(e -> {
             try {
-                entry = new Entry(datePicker.getValue());
+                entry = new Entry(password, datePicker.getValue());
                 textArea.setText(entry.getText());
             } catch (IOException ex) {
                 ExceptionDialog ed = new ExceptionDialog(ex);
@@ -77,7 +77,7 @@ public class GUI extends Stage {
         setScene(new Scene(mainLayout, 800, 600));
 
         try {
-            entry = new Entry(LocalDate.now());
+            entry = new Entry(password, LocalDate.now());
             textArea.setText(entry.getText());
         } catch (IOException ex) {
             ExceptionDialog ed = new ExceptionDialog(ex);
@@ -106,7 +106,7 @@ public class GUI extends Stage {
         datePicker.setOnAction(event -> {
             LocalDate date = datePicker.getValue();
             try {
-                entry = new Entry(date);
+                entry = new Entry(password, date);
             } catch (Exception ex) {
                 ExceptionDialog ed = new ExceptionDialog(ex);
                 ed.showAndWait();
