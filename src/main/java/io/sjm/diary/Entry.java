@@ -136,9 +136,9 @@ public class Entry implements JSONString {
     private String getPath() {
         assert date != null;
 
-        String dirName = date.format(DateTimeFormatter.ofPattern(Settings.fmt));
+        String dirName = date.format(DateTimeFormatter.ofPattern(Settings.DIRFORMAT));
         String filename =
-            date.format(DateTimeFormatter.ofPattern(Settings.fmt.replace(Settings.sep, "-")));
+            date.format(DateTimeFormatter.ofPattern(Settings.FILEFORMAT));
 
         return Settings.homeDir + dirName + File.separator + filename + ".json";
     }

@@ -25,5 +25,6 @@ public class Settings {
     static String homeDir = System.getProperty("user.home") + sep + appName + sep;
     static String settingsPath = homeDir + "settings.txt";
 
-    static String fmt = "u" + sep + "MM" + sep + "dd";
+    static String DIRFORMAT = "u" + sep + "MM";
+    static String FILEFORMAT = "u-MM-dd";
 }
