@@ -39,17 +39,17 @@ public class Entry implements JSONString {
     protected String text = "";
 
     protected String password;
-    protected String filename;
+    protected String path;
 
     public Entry(String password) {
         this.date = LocalDate.now();
-        this.filename = getFilename();
+        this.path = getPath();
         this.password = password;
     }
 
     public Entry(String password, LocalDate date) throws IOException {
         this.date = date;
-        this.filename = getFilename();
+        this.path = getPath();
         this.password = password;
 
         if (exists())
@@ -89,7 +89,7 @@ public class Entry implements JSONString {
      */
     private void load(String password) throws IOException {
         try {
-            String ciphertext = Utils.load(Paths.get(filename));
+            String ciphertext = Utils.load(Paths.get(path));
             String plaintext = Crypto.decryptString(ciphertext, password);
             fromJSONString(plaintext);
         } catch (GeneralSecurityException e) {
@@ -110,22 +110,22 @@ public class Entry implements JSONString {
     }
 
     public void save(String password) throws IOException {
-        assert filename != null;
+        assert path != null;
 
         try {
             String ciphertext = Crypto.encryptString(toJSONString(), password);
-            Path filePath = Paths.get(filename);
+            Path filePath = Paths.get(path);
             Files.createDirectories(filePath.getParent());
-            Files.write(Paths.get(filename), ciphertext.getBytes(), StandardOpenOption.CREATE);
+            Files.write(Paths.get(path), ciphertext.getBytes(), StandardOpenOption.CREATE);
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
     }
 
     private boolean exists() {
-        assert filename != null;
+        assert path != null;
 
-        return Files.exists(Paths.get(filename));
+        return Files.exists(Paths.get(path));
     }
 
     /**
@@ -133,16 +133,13 @@ public class Entry implements JSONString {
      *
      * @return the path to the diary entry
      */
-    private String getFilename() {
+    private String getPath() {
         assert date != null;
 
         String dirName = date.format(DateTimeFormatter.ofPattern(Settings.fmt));
-        String fileName =
+        String filename =
             date.format(DateTimeFormatter.ofPattern(Settings.fmt.replace(Settings.sep, "-")));
-        String tmp = Settings.homeDir + dirName + File.separator + fileName + ".json";
 
-        System.out.println(tmp);
-
-        return tmp;
+        return Settings.homeDir + dirName + File.separator + filename + ".json";
     }
 }
