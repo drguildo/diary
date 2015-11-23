@@ -41,12 +41,6 @@ public class Entry implements JSONString {
     protected String password;
     protected String path;
 
-    public Entry(String password) {
-        this.date = LocalDate.now();
-        this.path = getPath();
-        this.password = password;
-    }
-
     public Entry(String password, LocalDate date) throws IOException {
         this.date = date;
         this.path = getPath();
