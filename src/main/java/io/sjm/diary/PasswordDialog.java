@@ -32,8 +32,7 @@ public class PasswordDialog extends Dialog<String> {
         setTitle("Password");
         setHeaderText("Please enter your password.");
 
-        ButtonType passwordButtonType = new ButtonType("Okay", ButtonData.OK_DONE);
-        getDialogPane().getButtonTypes().addAll(passwordButtonType, ButtonType.CANCEL);
+        getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
         passwordField = new PasswordField();
         passwordField.setPromptText("Password");
@@ -49,9 +48,8 @@ public class PasswordDialog extends Dialog<String> {
         Platform.runLater(() -> passwordField.requestFocus());
 
         setResultConverter(dialogButton -> {
-            if (dialogButton == passwordButtonType) {
+            if (dialogButton == ButtonType.OK)
                 return passwordField.getText();
-            }
             return null;
         });
     }
