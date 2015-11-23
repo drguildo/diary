@@ -44,7 +44,7 @@ public class GUI extends Stage {
 
         addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.isControlDown() && e.getCode() == KeyCode.W) {
-                exit();
+                exit(0);
             }
         });
 
@@ -93,7 +93,7 @@ public class GUI extends Stage {
         MenuItem exitMenu = new MenuItem("Exit");
         Menu helpMenu = new Menu("Help");
 
-        exitMenu.setOnAction(e -> exit());
+        exitMenu.setOnAction(e -> exit(0));
         fileMenu.getItems().addAll(exitMenu);
 
         menuBar.getMenus().addAll(fileMenu, helpMenu);
@@ -125,12 +125,14 @@ public class GUI extends Stage {
         if (result.isPresent())
             return result.get();
         else
-            exit();
+            // The user clicked cancel.
+            exit(0);
 
         return null;
     }
 
-    private void exit() {
+    private void exit(int status) {
         Platform.exit();
+        System.exit(status);
     }
 }
