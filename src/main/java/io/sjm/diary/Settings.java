@@ -19,12 +19,9 @@ package io.sjm.diary;
 import java.io.File;
 
 public class Settings {
-    static String sep = File.separator;
-
     static String appName = "diary";
-    static String homeDir = System.getProperty("user.home") + sep + appName + sep;
-    static String settingsPath = homeDir + "settings.txt";
+    static String homeDir = System.getProperty("user.home") + File.separator + appName + File.separator;
 
-    static String DIRFORMAT = "u" + sep + "MM";
+    static String DIRFORMAT = "u" + File.separator + "MM";
     static String FILEFORMAT = "u-MM-dd";
 }
