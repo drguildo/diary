@@ -100,6 +100,7 @@ public class Entry implements JSONString {
         JSONObject obj = new JSONObject(s);
 
         date = LocalDate.parse(obj.getString("date"));
+        path = getPath();
         text = obj.getString("entry");
     }
 
