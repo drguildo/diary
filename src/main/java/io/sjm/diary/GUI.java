@@ -32,13 +32,14 @@ import java.util.Optional;
 
 public class GUI extends Stage {
     private DatePicker datePicker = new DatePicker();
+    private TextArea textArea = new TextArea();
+
     private Entry entry;
     private String password = "";
 
     public GUI() {
         BorderPane mainLayout = new BorderPane();
         HBox hBox = buildMenuBar(datePicker);
-        TextArea textArea = new TextArea();
 
         password = getPassword();
 
@@ -60,15 +61,7 @@ public class GUI extends Stage {
             }
         });
 
-        datePicker.setOnAction(e -> {
-            try {
-                entry = new Entry(password, datePicker.getValue());
-                textArea.setText(entry.getText());
-            } catch (IOException ex) {
-                ExceptionDialog ed = new ExceptionDialog(ex);
-                ed.showAndWait();
-            }
-        });
+        datePicker.setOnAction(e -> setTextAreaToDate(datePicker.getValue()));
 
         mainLayout.setTop(hBox);
         mainLayout.setCenter(textArea);
@@ -76,9 +69,19 @@ public class GUI extends Stage {
         setTitle("Diary");
         setScene(new Scene(mainLayout, 800, 600));
 
+        setTextAreaToDate(LocalDate.now());
+    }
+
+    /**
+     * Sets the contents of the text area to the diary entry corresponding to the specified date.
+     *
+     * @param date the date of the diary entry to display
+     */
+    private void setTextAreaToDate(LocalDate date) {
         try {
-            entry = new Entry(password, LocalDate.now());
+            entry = new Entry(password, date);
             textArea.setText(entry.getText());
+            textArea.requestFocus();
         } catch (IOException ex) {
             ExceptionDialog ed = new ExceptionDialog(ex);
             ed.showAndWait();
