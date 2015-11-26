@@ -24,4 +24,6 @@ public class Settings {
 
     static String DIRFORMAT = "u" + File.separator + "MM";
     static String FILEFORMAT = "u-MM-dd";
+
+    static String PASSWORD = "";
 }

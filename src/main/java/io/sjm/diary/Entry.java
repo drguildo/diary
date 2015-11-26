@@ -38,16 +38,14 @@ public class Entry implements JSONString {
     protected LocalDate date;
     protected String text = "";
 
-    protected String password;
     protected String path;
 
-    public Entry(String password, LocalDate date) throws IOException {
+    public Entry(LocalDate date) throws IOException {
         this.date = date;
         this.path = getPath(date);
-        this.password = password;
 
         if (exists(date))
-            load(password);
+            load(Settings.PASSWORD);
     }
 
     public String getText() {
