@@ -43,10 +43,10 @@ public class Entry implements JSONString {
 
     public Entry(String password, LocalDate date) throws IOException {
         this.date = date;
-        this.path = getPath();
+        this.path = getPath(date);
         this.password = password;
 
-        if (exists())
+        if (exists(date))
             load(password);
     }
 
@@ -100,7 +100,7 @@ public class Entry implements JSONString {
         JSONObject obj = new JSONObject(s);
 
         date = LocalDate.parse(obj.getString("date"));
-        path = getPath();
+        path = getPath(date);
         text = obj.getString("entry");
     }
 
@@ -117,23 +117,25 @@ public class Entry implements JSONString {
         }
     }
 
-    private boolean exists() {
-        assert path != null;
-
-        return Files.exists(Paths.get(path));
+    /**
+     * Check whether a file corresponding to the given date exists.
+     *
+     * @param date the date to be checked for a corresponding file
+     * @return whether a file exists for the specified date
+     */
+    public static boolean exists(LocalDate date) {
+        return Files.exists(Paths.get(getPath(date)));
     }
 
     /**
-     * Generates the path to the file used to store the diary entry.
+     * Generates the path to the file used to load and store the diary entry.
      *
+     * @param date the date of the relevant diary entry
      * @return the path to the diary entry
      */
-    private String getPath() {
-        assert date != null;
-
+    private static String getPath(LocalDate date) {
         String dirName = date.format(DateTimeFormatter.ofPattern(Settings.DIRFORMAT));
-        String filename =
-            date.format(DateTimeFormatter.ofPattern(Settings.FILEFORMAT));
+        String filename = date.format(DateTimeFormatter.ofPattern(Settings.FILEFORMAT));
 
         return Settings.homeDir + dirName + File.separator + filename + ".json";
     }
