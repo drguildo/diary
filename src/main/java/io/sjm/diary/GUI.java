@@ -61,6 +61,14 @@ public class GUI extends Stage {
             }
         });
 
+        datePicker.setDayCellFactory(dp -> new DateCell() {
+            @Override public void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (Entry.exists(item))
+                    setStyle("-fx-background-color: #6fc;");
+            }
+        });
         datePicker.setOnAction(e -> setTextAreaToDate(datePicker.getValue()));
 
         mainLayout.setTop(hBox);
