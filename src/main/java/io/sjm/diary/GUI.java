@@ -35,13 +35,12 @@ public class GUI extends Stage {
     private TextArea textArea = new TextArea();
 
     private Entry entry;
-    private String password = "";
 
     public GUI() {
         BorderPane mainLayout = new BorderPane();
         HBox hBox = buildMenuBar(datePicker);
 
-        password = getPassword();
+        Settings.PASSWORD = getPassword();
 
         addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.isControlDown() && e.getCode() == KeyCode.W) {
@@ -53,7 +52,7 @@ public class GUI extends Stage {
             if (e.isControlDown() && e.getCode() == KeyCode.S) {
                 entry.setText(textArea.getText());
                 try {
-                    entry.save(password);
+                    entry.save(Settings.PASSWORD);
                 } catch (IOException ex) {
                     ExceptionDialog ed = new ExceptionDialog(ex);
                     ed.showAndWait();
@@ -87,7 +86,7 @@ public class GUI extends Stage {
      */
     private void setTextAreaToDate(LocalDate date) {
         try {
-            entry = new Entry(password, date);
+            entry = new Entry(date);
             textArea.setText(entry.getText());
             textArea.requestFocus();
         } catch (IOException ex) {
@@ -117,7 +116,7 @@ public class GUI extends Stage {
         datePicker.setOnAction(event -> {
             LocalDate date = datePicker.getValue();
             try {
-                entry = new Entry(password, date);
+                entry = new Entry(date);
             } catch (Exception ex) {
                 ExceptionDialog ed = new ExceptionDialog(ex);
                 ed.showAndWait();
