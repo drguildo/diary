@@ -18,7 +18,6 @@ package io.sjm.diary;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.PasswordField;
@@ -29,8 +28,12 @@ public class PasswordDialog extends Dialog<String> {
     private PasswordField passwordField;
 
     public PasswordDialog() {
+        this("Please enter your password.");
+    }
+
+    public PasswordDialog(String message) {
         setTitle("Password");
-        setHeaderText("Please enter your password.");
+        setHeaderText(message);
 
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 

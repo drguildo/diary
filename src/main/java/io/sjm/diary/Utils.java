@@ -50,7 +50,10 @@ public class Utils {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public static Entry loadEntry(final LocalDate date) throws IOException, GeneralSecurityException {
+    public static Entry loadEntry(final LocalDate date)
+        throws IOException, GeneralSecurityException {
+        assert !Settings.PASSWORD.isEmpty();
+
         byte[] encoded = Files.readAllBytes(getPath(date));
         String ciphertext = new String(encoded, Charset.defaultCharset());
         String plaintext = Crypto.decryptString(ciphertext, Settings.PASSWORD);
@@ -61,6 +64,8 @@ public class Utils {
     }
 
     public static void saveEntry(final Entry entry) throws IOException {
+        assert !Settings.PASSWORD.isEmpty();
+
         Path path = getPath(entry.getDate());
 
         try {

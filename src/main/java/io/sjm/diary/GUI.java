@@ -41,8 +41,6 @@ public class GUI extends Stage {
         BorderPane mainLayout = new BorderPane();
         HBox hBox = buildMenuBar(datePicker);
 
-        Settings.PASSWORD = getPassword();
-
         addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.isControlDown() && e.getCode() == KeyCode.W) {
                 exit(0);
@@ -61,44 +59,13 @@ public class GUI extends Stage {
             }
         });
 
-        datePicker.setDayCellFactory(dp -> new DateCell() {
-            @Override public void updateItem(LocalDate item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if (Utils.entryExists(item))
-                    setStyle("-fx-background-color: #6fc;");
-            }
-        });
-        datePicker.setOnAction(e -> setTextAreaToDate(datePicker.getValue()));
-
         mainLayout.setTop(hBox);
         mainLayout.setCenter(textArea);
 
         setTitle("Diary");
         setScene(new Scene(mainLayout, 800, 600));
 
-        setTextAreaToDate(LocalDate.now());
-    }
-
-    /**
-     * Sets the contents of the text area to the diary entry corresponding to the specified date.
-     *
-     * @param date the date of the diary entry to display
-     */
-    private void setTextAreaToDate(LocalDate date) {
-        try {
-            if (Utils.entryExists(date))
-                entry = Utils.loadEntry(date);
-            else
-                entry = new Entry(date);
-
-            textArea.setText(entry.getText());
-            textArea.requestFocus();
-        } catch (IOException ex) {
-            ExceptionDialog ed = new ExceptionDialog(ex);
-            ed.showAndWait();
-        } catch (GeneralSecurityException ignored) {
-        }
+        viewEntry(LocalDate.now());
     }
 
     private HBox buildMenuBar(DatePicker datePicker) {
@@ -116,20 +83,64 @@ public class GUI extends Stage {
 
         datePicker.setValue(LocalDate.now());
 
+        datePicker.setDayCellFactory(dp -> new DateCell() {
+            @Override public void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (Utils.entryExists(item))
+                    setStyle("-fx-background-color: #6fc;");
+            }
+        });
+        datePicker.setOnAction(e -> viewEntry(datePicker.getValue()));
+
         hBox.getChildren().addAll(menuBar, this.datePicker);
         HBox.setHgrow(menuBar, Priority.ALWAYS);
 
-        datePicker.setOnAction(event -> {
-            LocalDate date = datePicker.getValue();
-            try {
-                entry = new Entry(date);
-            } catch (Exception ex) {
-                ExceptionDialog ed = new ExceptionDialog(ex);
-                ed.showAndWait();
-            }
-        });
-
         return hBox;
+    }
+
+    /**
+     * Sets the contents of the text area to the diary entry corresponding to the specified date.
+     *
+     * @param date the date of the diary entry to display
+     */
+    private void viewEntry(LocalDate date) {
+        if (Utils.entryExists(date)) {
+            entry = loadEntry(date);
+        } else {
+            entry = new Entry(date);
+        }
+
+        if (entry != null) {
+            textArea.setText(entry.getText());
+        }
+        textArea.requestFocus();
+    }
+
+    /**
+     * Attempt loading and decryption of a diary entry and if it fails, keep prompting the user for
+     * a password until decryption succeeds. In the case of an IO error, return null.
+     *
+     * @param date the date of the entry to be loaded and decrypted
+     * @return the relevant diary entry or null in the case of failure
+     */
+    private Entry loadEntry(LocalDate date) {
+        if (Settings.PASSWORD.isEmpty())
+            Settings.PASSWORD = getPassword("Please enter your password.");
+
+        while (true) {
+            try {
+                return Utils.loadEntry(date);
+            } catch (GeneralSecurityException e) {
+                // This usually occurs when decrypting using an incorrect password.
+                Settings.PASSWORD = getPassword("Invalid password. Please try again.");
+            } catch (IOException e) {
+                ExceptionDialog exceptionDialog = new ExceptionDialog(e);
+                exceptionDialog.showAndWait();
+
+                return null;
+            }
+        }
     }
 
     /**
@@ -137,8 +148,8 @@ public class GUI extends Stage {
      *
      * @return the entered password
      */
-    private String getPassword() {
-        PasswordDialog pd = new PasswordDialog();
+    private String getPassword(String message) {
+        PasswordDialog pd = new PasswordDialog(message);
         Optional<String> result;
 
         result = pd.showAndWait();
