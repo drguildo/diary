@@ -51,6 +51,8 @@ public class GUI extends Stage {
             if (e.isControlDown() && e.getCode() == KeyCode.S) {
                 entry.setText(textArea.getText());
                 try {
+                    if (Settings.PASSWORD.isEmpty())
+                        Settings.PASSWORD = getPassword("Please enter a password.");
                     Utils.saveEntry(entry);
                 } catch (IOException ex) {
                     ExceptionDialog ed = new ExceptionDialog(ex);
