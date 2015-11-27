@@ -24,6 +24,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -40,6 +41,9 @@ public class GUI extends Stage {
     public GUI() {
         BorderPane mainLayout = new BorderPane();
         HBox hBox = buildMenuBar(datePicker);
+
+        textArea.setWrapText(true);
+        textArea.setFont(Font.font(16)); // TODO Make proportional to screen size/DPI.
 
         addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.isControlDown() && e.getCode() == KeyCode.W) {
