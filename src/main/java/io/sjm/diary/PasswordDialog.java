@@ -31,7 +31,7 @@ public class PasswordDialog extends Dialog<String> {
         this("Please enter your password.");
     }
 
-    public PasswordDialog(String message) {
+    public PasswordDialog(final String message) {
         setTitle("Password");
         setHeaderText(message);
 

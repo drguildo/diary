@@ -74,7 +74,7 @@ public class GUI extends Stage {
         viewEntry(LocalDate.now());
     }
 
-    private HBox buildMenuBar(DatePicker datePicker) {
+    private HBox buildMenuBar(final DatePicker datePicker) {
         HBox hBox = new HBox();
 
         MenuBar menuBar = new MenuBar();
@@ -110,7 +110,7 @@ public class GUI extends Stage {
      *
      * @param date the date of the diary entry to display
      */
-    private void viewEntry(LocalDate date) {
+    private void viewEntry(final LocalDate date) {
         if (Utils.entryExists(date)) {
             entry = loadEntry(date);
         } else {
@@ -134,7 +134,7 @@ public class GUI extends Stage {
      * @param date the date of the entry to be loaded and decrypted
      * @return the relevant diary entry or null in the case of failure
      */
-    private Entry loadEntry(LocalDate date) {
+    private Entry loadEntry(final LocalDate date) {
         if (Settings.PASSWORD.isEmpty())
             Settings.PASSWORD = getPassword("Please enter your password.");
 
@@ -158,7 +158,7 @@ public class GUI extends Stage {
      *
      * @return the entered password
      */
-    private String getPassword(String message) {
+    private String getPassword(final String message) {
         PasswordDialog pd = new PasswordDialog(message);
         Optional<String> result;
 

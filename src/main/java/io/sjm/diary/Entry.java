@@ -26,11 +26,11 @@ public class Entry {
     protected LocalDate date;
     protected String text = "";
 
-    public Entry(LocalDate date) {
+    public Entry(final LocalDate date) {
         this.date = date;
     }
 
-    public Entry(LocalDate date, String text) {
+    public Entry(final LocalDate date, final String text) {
         this.date = date;
         this.text = text;
     }
