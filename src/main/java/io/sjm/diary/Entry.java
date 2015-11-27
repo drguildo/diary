@@ -16,125 +16,35 @@
 
 package io.sjm.diary;
 
-import org.json.JSONObject;
-import org.json.JSONString;
-import org.json.JSONStringer;
-
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.security.GeneralSecurityException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Represents a diary entry. Diary entries are stored on disk in JSON text files. Each diary entry
  * is password encrypted.
  */
-public class Entry implements JSONString {
+public class Entry {
     protected LocalDate date;
     protected String text = "";
 
-    protected String path;
-
     public Entry(LocalDate date) throws IOException {
         this.date = date;
-        this.path = getPath(date);
+    }
 
-        if (exists(date))
-            load(Settings.PASSWORD);
+    public Entry(LocalDate date, String text) throws IOException {
+        this.date = date;
+        this.text = text;
+    }
+
+    public LocalDate getDate() {
+        return date;
     }
 
     public String getText() {
-        assert text != null;
-
         return text;
     }
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    @Override public String toJSONString() {
-        assert date != null;
-        assert text != null;
-
-        JSONStringer stringer = new JSONStringer();
-
-        stringer.object();
-        stringer.key("date");
-        stringer.value(String.valueOf(date));
-        stringer.key("entry");
-        stringer.value(text);
-        stringer.endObject();
-
-        return stringer.toString();
-    }
-
-    /**
-     * Read a diary entry from the corresponding text file.
-     *
-     * @throws IOException
-     */
-    private void load(String password) throws IOException {
-        try {
-            String ciphertext = Utils.load(Paths.get(path));
-            String plaintext = Crypto.decryptString(ciphertext, password);
-            fromJSONString(plaintext);
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Constructs the diary entry from a JSON encoded string.
-     *
-     * @param s a JSON encoded string representing a diary entry
-     */
-    private void fromJSONString(final String s) {
-        JSONObject obj = new JSONObject(s);
-
-        date = LocalDate.parse(obj.getString("date"));
-        path = getPath(date);
-        text = obj.getString("entry");
-    }
-
-    public void save(String password) throws IOException {
-        assert path != null;
-
-        try {
-            String ciphertext = Crypto.encryptString(toJSONString(), password);
-            Path filePath = Paths.get(path);
-            Files.createDirectories(filePath.getParent());
-            Files.write(Paths.get(path), ciphertext.getBytes(), StandardOpenOption.CREATE);
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Check whether a file corresponding to the given date exists.
-     *
-     * @param date the date to be checked for a corresponding file
-     * @return whether a file exists for the specified date
-     */
-    public static boolean exists(LocalDate date) {
-        return Files.exists(Paths.get(getPath(date)));
-    }
-
-    /**
-     * Generates the path to the file used to load and store the diary entry.
-     *
-     * @param date the date of the relevant diary entry
-     * @return the path to the diary entry
-     */
-    private static String getPath(LocalDate date) {
-        String dirName = date.format(DateTimeFormatter.ofPattern(Settings.DIRFORMAT));
-        String filename = date.format(DateTimeFormatter.ofPattern(Settings.FILEFORMAT));
-
-        return Settings.homeDir + dirName + File.separator + filename + ".json";
     }
 }

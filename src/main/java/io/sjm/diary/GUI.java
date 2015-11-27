@@ -27,6 +27,7 @@ import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -52,7 +53,7 @@ public class GUI extends Stage {
             if (e.isControlDown() && e.getCode() == KeyCode.S) {
                 entry.setText(textArea.getText());
                 try {
-                    entry.save(Settings.PASSWORD);
+                    Utils.saveEntry(entry);
                 } catch (IOException ex) {
                     ExceptionDialog ed = new ExceptionDialog(ex);
                     ed.showAndWait();
@@ -64,7 +65,7 @@ public class GUI extends Stage {
             @Override public void updateItem(LocalDate item, boolean empty) {
                 super.updateItem(item, empty);
 
-                if (Entry.exists(item))
+                if (Utils.entryExists(item))
                     setStyle("-fx-background-color: #6fc;");
             }
         });
@@ -86,12 +87,17 @@ public class GUI extends Stage {
      */
     private void setTextAreaToDate(LocalDate date) {
         try {
-            entry = new Entry(date);
+            if (Utils.entryExists(date))
+                entry = Utils.loadEntry(date);
+            else
+                entry = new Entry(date);
+
             textArea.setText(entry.getText());
             textArea.requestFocus();
         } catch (IOException ex) {
             ExceptionDialog ed = new ExceptionDialog(ex);
             ed.showAndWait();
+        } catch (GeneralSecurityException ignored) {
         }
     }
 
@@ -126,6 +132,11 @@ public class GUI extends Stage {
         return hBox;
     }
 
+    /**
+     * Retrieve a password from the user or exit if they cancel.
+     *
+     * @return the entered password
+     */
     private String getPassword() {
         PasswordDialog pd = new PasswordDialog();
         Optional<String> result;
