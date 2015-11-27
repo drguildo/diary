@@ -111,8 +111,12 @@ public class GUI extends Stage {
             entry = new Entry(date);
         }
 
-        if (entry != null) {
+        if (entry == null) {
+            textArea.setText("");
+            textArea.setDisable(true);
+        } else {
             textArea.setText(entry.getText());
+            textArea.setDisable(false);
         }
         textArea.requestFocus();
     }
